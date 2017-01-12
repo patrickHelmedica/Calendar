@@ -153,6 +153,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
 @property (copy, nonatomic) dispatch_block_t scrollViewAnimationCompletionBlock;
 
 @property (nonatomic) OSCache *dimmedTimeRangesCache;          // cache for dimmed time ranges (indexed by date)
+@property (nonatomic) OSCache *dateRangeCache;                 // cache for date ranges (indexed by date)
 
 @end
 
@@ -199,6 +200,9 @@ static const CGFloat kMaxHourSlotHeight = 150.;
 	
     _dimmedTimeRangesCache = [[OSCache alloc]init];
     _dimmedTimeRangesCache.countLimit = 200;
+    
+    _dateRangeCache = [[OSCache alloc]init];
+    _dateRangeCache.countLimit = 200;
     
     _durationForNewTimedEvent = 60 * 60;
     
@@ -409,6 +413,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
     _hourRange = hourRange;
     
     [self.dimmedTimeRangesCache removeAllObjects];
+    [self.dateRangeCache removeAllObjects];
     
     self.timedEventsViewLayout.dayColumnSize = self.dayColumnSize;
     [self.timedEventsViewLayout invalidateLayout];
@@ -621,12 +626,22 @@ static const CGFloat kMaxHourSlotHeight = 150.;
     }
 }
 
+
+
 // returns the scrollable time range for the day at date, depending on hourRange
 - (MGCDateRange*)scrollableTimeRangeForDate:(NSDate*)date
 {
-    NSDate *dayRangeStart = [self.calendar dateBySettingHour:self.hourRange.location minute:0 second:0 ofDate:date options:0];
-    NSDate *dayRangeEnd = [self.calendar dateBySettingHour:NSMaxRange(self.hourRange) - 1 minute:59 second:0 ofDate:date options:0];
-    return [MGCDateRange dateRangeWithStart:dayRangeStart end:dayRangeEnd];
+    MGCDateRange *range = [self.dateRangeCache objectForKey:date];
+    if (range == nil) 
+    {
+        NSDate *dayRangeStart = [self.calendar dateBySettingHour:self.hourRange.location minute:0 second:0 ofDate:date options:0];
+        NSDate *dayRangeEnd = [self.calendar dateBySettingHour:NSMaxRange(self.hourRange) - 1 minute:59 second:0 ofDate:date options:0];
+        range = [MGCDateRange dateRangeWithStart:dayRangeStart end:dayRangeEnd];
+        
+        [self.dateRangeCache setObject:range forKey:date];
+    }
+    
+    return range;
 }
 
 #pragma mark - Locating days and events
