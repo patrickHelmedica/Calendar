@@ -370,7 +370,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
 {
     CGFloat dayWidth = self.dayColumnSize.width;
 	
-	NSUInteger first = floorf(self.timedEventsView.contentOffset.x / dayWidth);
+	NSInteger first = (NSInteger)floorf(self.timedEventsView.contentOffset.x / dayWidth);
 	NSDate *firstDay = [self dateFromDayOffset:first];
 	if (self.dateRange && [firstDay compare:self.dateRange.start] == NSOrderedAscending)
 		firstDay = self.dateRange.start;
