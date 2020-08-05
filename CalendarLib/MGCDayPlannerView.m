@@ -193,7 +193,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
 	_canCreateEvents = YES;
 	_canMoveEvents = YES;
 	_allowsSelection = YES;
-    _eventCoveringType = TimedEventCoveringTypeClassic;
+    _eventCoveringType = MGCDayPlannerCoveringTypeClassic;
 	
 	_reuseQueue = [[MGCReusableObjectQueue alloc] init];
 	_loadingDays = [NSMutableOrderedSet orderedSetWithCapacity:14];
@@ -211,7 +211,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
 	
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidReceiveMemoryWarning:) name:UIApplicationDidReceiveMemoryWarningNotification object:nil];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillChangeStatusBarOrientation:) name:UIApplicationWillChangeStatusBarOrientationNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(deviceDidChangeOrientation:) name:UIDeviceOrientationDidChangeNotification object:nil];
 }
 
 - (id)initWithCoder:(NSCoder*)coder
@@ -240,7 +240,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
 	[self reloadAllEvents];
 }
 
-- (void)applicationWillChangeStatusBarOrientation:(NSNotification*)notification
+- (void)deviceDidChangeOrientation:(NSNotification*)notification
 {
     [self endInteraction];
     
@@ -1144,10 +1144,16 @@ static const CGFloat kMaxHourSlotHeight = 150.;
 	CGRect frame = cell.frame;
 	
 	[UIView animateWithDuration:0.2 animations:^{
-		[UIView setAnimationRepeatCount:2];
 		cell.frame = CGRectInset(cell.frame, -4, -2);
 	} completion:^(BOOL finished){
 		cell.frame = frame;
+        if (finished) {
+            [UIView animateWithDuration:0.2 animations:^{
+                cell.frame = CGRectInset(cell.frame, -4, -2);
+            } completion:^(BOOL finished){
+                cell.frame = frame;
+            }];
+        }
 	}];
 }
 
@@ -1581,7 +1587,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
         [self.timedEventsView reloadData];
 		
         MGCTimedEventsViewLayoutInvalidationContext *context = [MGCTimedEventsViewLayoutInvalidationContext new];
-        context.invalidatedSections = [NSIndexSet indexSetWithIndex:section];
+        context.invalidatedSections = [NSMutableIndexSet indexSetWithIndex:section];
         [self.timedEventsView.collectionViewLayout invalidateLayoutWithContext:context];
 
 		[self refreshEventMarkForColumnAtDate:date];
@@ -1594,7 +1600,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
     [self.dimmedTimeRangesCache removeAllObjects];
     
     MGCTimedEventsViewLayoutInvalidationContext *context = [MGCTimedEventsViewLayoutInvalidationContext new];
-    context.invalidatedSections = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.numberOfLoadedDays)];
+    context.invalidatedSections = [NSMutableIndexSet indexSetWithIndexesInRange:NSMakeRange(0, self.numberOfLoadedDays)];
     context.invalidateEventCells = NO;
     context.invalidateDimmingViews = YES;
     [self.timedEventsView.collectionViewLayout invalidateLayoutWithContext:context];
@@ -1919,7 +1925,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
 	else if (collectionView == self.dayColumnsView) {
 		return [self dayColumnCellAtIndexPath:indexPath];
 	}
-	return nil;
+	return [UICollectionViewCell new];
 }
 
 - (UICollectionReusableView*)collectionView:(UICollectionView*)collectionView viewForSupplementaryElementOfKind:(NSString*)kind atIndexPath:(NSIndexPath*)indexPath
@@ -1947,6 +1953,9 @@ static const CGFloat kMaxHourSlotHeight = 150.;
         [view addSubview:label];
         
         return view;
+    }
+    else {
+        return [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:kind forIndexPath:indexPath];
     }
 }
 

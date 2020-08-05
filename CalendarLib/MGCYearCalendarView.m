@@ -508,6 +508,8 @@ static const CGFloat kDefaultYearHeaderFontSizeiPhone = 20;	// deafult font size
         
         [headerView setNeedsDisplay];
         reusableview = headerView;
+    } else {
+        reusableview = [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:kind forIndexPath:indexPath];
     }
     
     return reusableview;

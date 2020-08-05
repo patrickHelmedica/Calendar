@@ -1089,10 +1089,16 @@ typedef enum
     CGRect frame = cell.frame;
     
     [UIView animateWithDuration:0.2 animations:^{
-        [UIView setAnimationRepeatCount:2];
         cell.frame = CGRectInset(cell.frame, -4, -2);
     } completion:^(BOOL finished){
         cell.frame = frame;
+        if (finished) {
+            [UIView animateWithDuration:0.2 animations:^{
+                cell.frame = CGRectInset(cell.frame, -4, -2);
+            } completion:^(BOOL finished){
+                cell.frame = frame;
+            }];
+        }
     }];
 }
 
@@ -1489,8 +1495,8 @@ typedef enum
     }
 	else if ([kind isEqualToString:MonthRowViewKind]) {
 		return [self monthRowViewAtIndexPath:indexPath];
-	}
-	return nil;
+    }
+    return [collectionView dequeueReusableSupplementaryViewOfKind:kind withReuseIdentifier:kind forIndexPath:indexPath];
 }
 
 #pragma mark - MGCEventsRowViewDelegate

@@ -81,7 +81,7 @@ static const CGFloat dotSize = 4;
     }
     else if (self.headerHeight > 0) {
         if (!self.activityIndicatorView) {
-            self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            self.activityIndicatorView = [[UIActivityIndicatorView alloc]initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
             self.activityIndicatorView.color = [UIColor blackColor];
             self.activityIndicatorView.transform = CGAffineTransformMakeScale(0.6, 0.6);
             [self.contentView addSubview:self.activityIndicatorView];

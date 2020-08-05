@@ -51,7 +51,7 @@
 #define APPEngine  [IMEngine shareEngine]
 
 
-#define IDIOM    UI_USER_INTERFACE_IDIOM()
+#define IDIOM    [[UIDevice currentDevice] userInterfaceIdiom]
 #define IPAD     UIUserInterfaceIdiomPad
 
 
