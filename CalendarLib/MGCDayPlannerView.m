@@ -1944,7 +1944,7 @@ static const CGFloat kMaxHourSlotHeight = 150.;
         
         NSUInteger hiddenCount = [self.allDayEventsViewLayout numberOfHiddenEventsInSection:indexPath.section];
         UILabel *label = [[UILabel alloc]initWithFrame:view.bounds];
-        label.text = [NSString stringWithFormat:NSLocalizedString(@"%d more...", nil), hiddenCount];
+        label.text = [NSString stringWithFormat:NSLocalizedString(@"%@ more...", nil), @(hiddenCount)];
         label.textColor = [UIColor blackColor];
         label.font = [UIFont systemFontOfSize:11];
         label.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
